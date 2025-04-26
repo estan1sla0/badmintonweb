@@ -30,9 +30,16 @@ document.addEventListener("DOMContentLoaded", () => {
         carga: form.carga.value,
         descripcion: form.descripcion.value
       };
-      await db.collection("entrenamientos").add(nuevo);
-      form.reset();
-      mostrarEntrenamientos(rol, uid);
+
+      try {
+        const nuevoDoc = db.collection("entrenamientos").doc(); // Creamos ID manualmente
+        await nuevoDoc.set(nuevo); // Guardamos usando set()
+        form.reset();
+        mostrarEntrenamientos(rol, uid);
+      } catch (error) {
+        console.error("Error al guardar el entrenamiento:", error);
+        Swal.fire('Error', error.message, 'error');
+      }
     });
 
     mostrarEntrenamientos(rol, uid);
@@ -64,7 +71,7 @@ async function mostrarEntrenamientos(rol, uid) {
   tabla.innerHTML = html;
 }
 
-// Función para exportar los entrenamientos a Excel
+// Función para exportar entrenamientos a Excel
 document.getElementById("exportBtn").addEventListener("click", async () => {
   const snapshot = await db.collection("entrenamientos").orderBy("fecha").get();
   const entrenamientos = [];
