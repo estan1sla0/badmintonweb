@@ -1,3 +1,5 @@
+let entrenamientos = [];
+
 document.addEventListener("DOMContentLoaded", () => {
   firebase.auth().onAuthStateChanged(async user => {
     if (!user) {
@@ -18,77 +20,73 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    const form = document.getElementById("formEntrenamiento");
-    form.addEventListener("submit", async e => {
-      e.preventDefault();
-      const nuevo = {
-        uid,
-        fecha: form.fecha.value,
-        categoria: form.categoria.value,
-        tipoTrabajo: form.tipoTrabajo.value,
-        modalidad: form.modalidad.value,
-        carga: form.carga.value,
-        descripcion: form.descripcion.value
-      };
+    await cargarEntrenamientos(rol, uid);
 
-      try {
-        const nuevoDoc = db.collection("entrenamientos").doc(); // Creamos ID manualmente
-        await nuevoDoc.set(nuevo); // Guardamos usando set()
-        form.reset();
-        mostrarEntrenamientos(rol, uid);
-      } catch (error) {
-        console.error("Error al guardar el entrenamiento:", error);
-        Swal.fire('Error', error.message, 'error');
-      }
-    });
-
-    mostrarEntrenamientos(rol, uid);
+    document.getElementById("filtroCategoria").addEventListener("change", filtrar);
+    document.getElementById("filtroModalidad").addEventListener("change", filtrar);
+    document.getElementById("filtroTrabajo").addEventListener("change", filtrar);
   });
 });
 
-// Función para mostrar entrenamientos en la tabla
-async function mostrarEntrenamientos(rol, uid) {
-  const tabla = document.getElementById("tablaEntrenamientos");
+async function cargarEntrenamientos(rol, uid) {
   const snapshot = await db.collection("entrenamientos").orderBy("fecha").get();
-  let html = "";
+  entrenamientos = [];
 
   snapshot.forEach(doc => {
     const data = doc.data();
     if (rol === "entrenador" || data.uid === uid) {
-      html += `
-        <tr>
-          <td>${data.fecha}</td>
-          <td>${data.categoria}</td>
-          <td>${data.tipoTrabajo}</td>
-          <td>${data.modalidad}</td>
-          <td>${data.carga}</td>
-          <td class="descripcion">${data.descripcion}</td>
-        </tr>
-      `;
+      entrenamientos.push(data);
     }
   });
 
-  tabla.innerHTML = html;
+  mostrarEntrenamientos(entrenamientos);
 }
 
-// Función para exportar entrenamientos a Excel
-document.getElementById("exportBtn").addEventListener("click", async () => {
-  const snapshot = await db.collection("entrenamientos").orderBy("fecha").get();
-  const entrenamientos = [];
+function mostrarEntrenamientos(datos) {
+  const tabla = document.getElementById("tablaEntrenamientos");
+  tabla.innerHTML = "";
 
-  snapshot.forEach(doc => {
-    const data = doc.data();
-    entrenamientos.push({
-      Fecha: data.fecha,
-      Categoría: data.categoria,
-      Trabajo: data.tipoTrabajo,
-      Modalidad: data.modalidad,
-      Carga: data.carga,
-      Descripción: data.descripcion
-    });
+  datos.forEach(data => {
+    const fila = `
+      <tr>
+        <td>${data.fecha}</td>
+        <td>${data.categoria}</td>
+        <td>${data.tipoTrabajo}</td>
+        <td>${data.modalidad}</td>
+        <td>${data.carga}</td>
+        <td class="descripcion">${data.descripcion}</td>
+      </tr>
+    `;
+    tabla.innerHTML += fila;
+  });
+}
+
+function filtrar() {
+  const categoria = document.getElementById("filtroCategoria").value;
+  const modalidad = document.getElementById("filtroModalidad").value;
+  const trabajo = document.getElementById("filtroTrabajo").value;
+
+  const filtrados = entrenamientos.filter(entrenamiento => {
+    return (
+      (categoria === "" || entrenamiento.categoria === categoria) &&
+      (modalidad === "" || entrenamiento.modalidad === modalidad) &&
+      (trabajo === "" || entrenamiento.tipoTrabajo === trabajo)
+    );
   });
 
-  const worksheet = XLSX.utils.json_to_sheet(entrenamientos);
+  mostrarEntrenamientos(filtrados);
+}
+
+// Exportar a Excel
+document.getElementById("exportBtn").addEventListener("click", () => {
+  const worksheet = XLSX.utils.json_to_sheet(entrenamientos.map(ent => ({
+    Fecha: ent.fecha,
+    Categoría: ent.categoria,
+    Trabajo: ent.tipoTrabajo,
+    Modalidad: ent.modalidad,
+    Carga: ent.carga,
+    Descripción: ent.descripcion
+  })));
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, "Entrenamientos");
 
