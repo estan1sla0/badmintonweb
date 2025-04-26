@@ -16,7 +16,7 @@
 <body>
   <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h3>Planilla Bádminton Argentina</h3>
+      <h3 class="app-title">🏸 Planilla Bádminton Argentina</h3>
       <div>
         <span id="userEmail" class="me-3 fw-bold"></span>
         <span class="badge bg-secondary" id="userRol"></span>
@@ -24,51 +24,39 @@
       </div>
     </div>
 
-    <form id="formEntrenamiento" class="row g-3 mb-4">
+    <!-- Filtros -->
+    <div class="row g-3 mb-4">
       <div class="col-md-3">
-        <input type="date" id="fecha" class="form-control" required />
-      </div>
-      <div class="col-md-2">
-        <select id="categoria" class="form-select" required>
-          <option>Adultos</option>
-          <option>Juveniles</option>
+        <select id="filtroCategoria" class="form-select">
+          <option value="">Todas las Categorías</option>
+          <option value="Adultos">Adultos</option>
+          <option value="Juveniles">Juveniles</option>
         </select>
       </div>
-      <div class="col-md-2">
-        <select id="tipoTrabajo" class="form-select" required>
-          <option>Multipluma</option>
-          <option>Consistencia</option>
-          <option>Partidos</option>
+      <div class="col-md-3">
+        <select id="filtroModalidad" class="form-select">
+          <option value="">Todas las Modalidades</option>
+          <option value="Singles">Singles</option>
+          <option value="Dobles">Dobles</option>
+          <option value="Dobles Mixto">Dobles Mixto</option>
         </select>
       </div>
-      <div class="col-md-2">
-        <select id="modalidad" class="form-select" required>
-          <option>Singles</option>
-          <option>Dobles</option>
-          <option>Dobles Mixto</option>
+      <div class="col-md-3">
+        <select id="filtroTrabajo" class="form-select">
+          <option value="">Todos los Trabajos</option>
+          <option value="Multipluma">Multipluma</option>
+          <option value="Consistencia">Consistencia</option>
+          <option value="Partidos">Partidos</option>
         </select>
       </div>
-      <div class="col-md-1">
-        <select id="carga" class="form-select" required>
-          <option>30%</option>
-          <option>60%</option>
-          <option>90%</option>
-        </select>
+      <div class="col-md-3 text-end">
+        <button id="exportBtn" class="btn btn-primary">
+          📥 Exportar a Excel
+        </button>
       </div>
-      <div class="col-md-12">
-        <textarea id="descripcion" class="form-control" rows="2" placeholder="Descripción del entrenamiento" required></textarea>
-      </div>
-      <div class="col-md-12 text-end">
-        <button class="btn btn-success">Guardar entrenamiento</button>
-      </div>
-    </form>
-
-    <!-- Botón de exportación -->
-    <div class="text-end mb-4">
-      <button id="exportBtn" class="btn btn-outline-primary">Exportar a Excel</button>
     </div>
 
-    <table class="table table-bordered">
+    <table class="table table-bordered table-hover">
       <thead class="table-light">
         <tr>
           <th>Fecha</th>
