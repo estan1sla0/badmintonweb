@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+// Función para mostrar entrenamientos en la tabla
 async function mostrarEntrenamientos(rol, uid) {
   const tabla = document.getElementById("tablaEntrenamientos");
   const snapshot = await db.collection("entrenamientos").orderBy("fecha").get();
@@ -62,3 +63,27 @@ async function mostrarEntrenamientos(rol, uid) {
 
   tabla.innerHTML = html;
 }
+
+// Función para exportar los entrenamientos a Excel
+document.getElementById("exportBtn").addEventListener("click", async () => {
+  const snapshot = await db.collection("entrenamientos").orderBy("fecha").get();
+  const entrenamientos = [];
+
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    entrenamientos.push({
+      Fecha: data.fecha,
+      Categoría: data.categoria,
+      Trabajo: data.tipoTrabajo,
+      Modalidad: data.modalidad,
+      Carga: data.carga,
+      Descripción: data.descripcion
+    });
+  });
+
+  const worksheet = XLSX.utils.json_to_sheet(entrenamientos);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Entrenamientos");
+
+  XLSX.writeFile(workbook, "entrenamientos.xlsx");
+});
