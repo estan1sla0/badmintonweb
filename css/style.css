@@ -2,6 +2,8 @@ body {
   background-color: #f4f8fb;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #333;
+  margin: 0;
+  padding: 0;
 }
 
 h3.app-title {
@@ -32,10 +34,6 @@ form, .filters {
   text-align: center;
 }
 
-.btn {
-  border-radius: 8px;
-}
-
 textarea.form-control {
   resize: none;
   overflow-wrap: break-word;
@@ -46,6 +44,23 @@ textarea.form-control {
   max-width: 250px;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+.btn {
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+input, select, textarea {
+  border-radius: 8px !important;
+}
+
+.container {
+  padding-bottom: 50px;
 }
 
 @media (max-width: 768px) {
