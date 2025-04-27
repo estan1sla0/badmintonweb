@@ -188,3 +188,6 @@ td {
   background-color: #0069d9;
   border-color: #0062cc;
 }
+* {
+  font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
