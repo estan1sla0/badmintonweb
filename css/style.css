@@ -122,3 +122,35 @@ input, select, textarea {
 .dark-mode textarea::placeholder {
   color: #bbb;
 }
+/* 🎨 Estilos para los botones de acciones en la tabla */
+td button {
+  margin-bottom: 5px;
+  width: 80px;
+}
+
+td {
+  vertical-align: middle !important;
+}
+
+/* 🎨 Estilos de botón individual */
+.btn-warning {
+  background-color: #ffc107;
+  border-color: #ffc107;
+  color: #212529;
+}
+
+.btn-warning:hover {
+  background-color: #e0a800;
+  border-color: #d39e00;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background-color: #bd2130;
+  border-color: #b21f2d;
+}
