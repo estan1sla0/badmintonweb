@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("formEntrenamiento");
     form.addEventListener("submit", async e => {
       e.preventDefault();
+      const nuevoDoc = db.collection("entrenamientos").doc();
       const nuevo = {
         uid: uid,
         fecha: form.fecha.value,
@@ -30,11 +31,11 @@ document.addEventListener("DOMContentLoaded", () => {
         tipoTrabajo: form.tipoTrabajo.value,
         modalidad: form.modalidad.value,
         carga: form.carga.value,
-        descripcion: form.descripcion.value
+        descripcion: form.descripcion.value,
+        id: nuevoDoc.id // 🔥 Guardamos el ID en el documento para usarlo después
       };
 
       try {
-        const nuevoDoc = db.collection("entrenamientos").doc();
         await nuevoDoc.set(nuevo);
         form.reset();
         await cargarEntrenamientos(rol, uid);
@@ -78,7 +79,7 @@ async function cargarEntrenamientos(rol, uid) {
   snapshot.forEach(doc => {
     const data = doc.data();
     if (rol === "entrenador" || data.uid === uid) {
-      entrenamientos.push(data);
+      entrenamientos.push({ ...data, id: doc.id });
     }
   });
 
@@ -98,6 +99,10 @@ function mostrarEntrenamientos(datos) {
         <td>${data.modalidad}</td>
         <td>${data.carga}</td>
         <td class="descripcion">${data.descripcion}</td>
+        <td>
+          <button class="btn btn-sm btn-warning me-1" onclick="editarDescripcion('${data.id}')">Editar</button>
+          <button class="btn btn-sm btn-danger" onclick="eliminarEntrenamiento('${data.id}')">Eliminar</button>
+        </td>
       </tr>
     `;
     tabla.innerHTML += fila;
@@ -148,5 +153,53 @@ function actualizarIcono() {
     boton.textContent = "🌙";
     boton.classList.remove("btn-outline-light");
     boton.classList.add("btn-outline-dark");
+  }
+}
+
+// 🔥 Función para editar descripción
+async function editarDescripcion(id) {
+  const docRef = db.collection("entrenamientos").doc(id);
+  const docSnap = await docRef.get();
+
+  const descripcionActual = docSnap.data().descripcion;
+
+  const { value: nuevaDescripcion } = await Swal.fire({
+    title: 'Editar Descripción',
+    input: 'textarea',
+    inputLabel: 'Nueva descripción',
+    inputValue: descripcionActual,
+    showCancelButton: true,
+    confirmButtonText: 'Guardar',
+    cancelButtonText: 'Cancelar',
+    inputAttributes: {
+      maxlength: 500,
+      'aria-label': 'Editar descripción'
+    }
+  });
+
+  if (nuevaDescripcion) {
+    await docRef.update({ descripcion: nuevaDescripcion });
+    await cargarEntrenamientos(document.getElementById("userRol").innerText, firebase.auth().currentUser.uid);
+    Swal.fire('Actualizado', 'La descripción fue actualizada correctamente.', 'success');
+  }
+}
+
+// 🔥 Función para eliminar entrenamiento
+async function eliminarEntrenamiento(id) {
+  const confirmacion = await Swal.fire({
+    title: '¿Eliminar entrenamiento?',
+    text: "Esta acción no se puede deshacer.",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  });
+
+  if (confirmacion.isConfirmed) {
+    await db.collection("entrenamientos").doc(id).delete();
+    await cargarEntrenamientos(document.getElementById("userRol").innerText, firebase.auth().currentUser.uid);
+    Swal.fire('Eliminado', 'El entrenamiento fue eliminado.', 'success');
   }
 }
