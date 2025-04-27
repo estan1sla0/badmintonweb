@@ -20,11 +20,37 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
+    const form = document.getElementById("formEntrenamiento");
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      const nuevo = {
+        uid: uid,
+        fecha: form.fecha.value,
+        categoria: form.categoria.value,
+        tipoTrabajo: form.tipoTrabajo.value,
+        modalidad: form.modalidad.value,
+        carga: form.carga.value,
+        descripcion: form.descripcion.value
+      };
+
+      try {
+        const nuevoDoc = db.collection("entrenamientos").doc();
+        await nuevoDoc.set(nuevo);
+        form.reset();
+        await cargarEntrenamientos(rol, uid);
+      } catch (error) {
+        console.error("Error al guardar entrenamiento:", error);
+        Swal.fire('Error', error.message, 'error');
+      }
+    });
+
     await cargarEntrenamientos(rol, uid);
 
     document.getElementById("filtroCategoria").addEventListener("change", filtrar);
     document.getElementById("filtroModalidad").addEventListener("change", filtrar);
     document.getElementById("filtroTrabajo").addEventListener("change", filtrar);
+
+    document.getElementById("exportBtn").addEventListener("click", exportarExcel);
   });
 });
 
@@ -77,8 +103,7 @@ function filtrar() {
   mostrarEntrenamientos(filtrados);
 }
 
-// Exportar a Excel
-document.getElementById("exportBtn").addEventListener("click", () => {
+function exportarExcel() {
   const worksheet = XLSX.utils.json_to_sheet(entrenamientos.map(ent => ({
     Fecha: ent.fecha,
     Categoría: ent.categoria,
@@ -91,4 +116,4 @@ document.getElementById("exportBtn").addEventListener("click", () => {
   XLSX.utils.book_append_sheet(workbook, worksheet, "Entrenamientos");
 
   XLSX.writeFile(workbook, "entrenamientos.xlsx");
-});
+}
