@@ -51,6 +51,23 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("filtroTrabajo").addEventListener("change", filtrar);
 
     document.getElementById("exportBtn").addEventListener("click", exportarExcel);
+
+    // 🔥 Modo Oscuro: aplicarlo si estaba guardado
+    const modoGuardado = localStorage.getItem("modo");
+    if (modoGuardado === "oscuro") {
+      document.body.classList.add("dark-mode");
+      actualizarIcono();
+    }
+  });
+
+  // 🔥 Botón de Modo Oscuro
+  document.getElementById("darkModeBtn").addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+
+    const modoActual = document.body.classList.contains("dark-mode") ? "oscuro" : "claro";
+    localStorage.setItem("modo", modoActual);
+
+    actualizarIcono();
   });
 });
 
@@ -116,4 +133,20 @@ function exportarExcel() {
   XLSX.utils.book_append_sheet(workbook, worksheet, "Entrenamientos");
 
   XLSX.writeFile(workbook, "entrenamientos.xlsx");
+}
+
+// 🔥 Función auxiliar para cambiar icono del botón Modo Oscuro
+function actualizarIcono() {
+  const boton = document.getElementById("darkModeBtn");
+  if (!boton) return;
+  
+  if (document.body.classList.contains("dark-mode")) {
+    boton.textContent = "☀️";
+    boton.classList.remove("btn-outline-dark");
+    boton.classList.add("btn-outline-light");
+  } else {
+    boton.textContent = "🌙";
+    boton.classList.remove("btn-outline-light");
+    boton.classList.add("btn-outline-dark");
+  }
 }
