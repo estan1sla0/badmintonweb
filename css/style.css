@@ -76,3 +76,35 @@ input, select, textarea {
     font-size: 14px;
   }
 }
+
+/* 🔥 MODO OSCURO agregado */
+.dark-mode {
+  background-color: #1e1e2f;
+  color: #f1f1f1;
+}
+
+.dark-mode form,
+.dark-mode .filters,
+.dark-mode .table {
+  background-color: #2c2c3e;
+  color: #f1f1f1;
+}
+
+.dark-mode .table th {
+  background-color: #3a3a4e;
+}
+
+.dark-mode .btn-primary {
+  background-color: #4a90e2;
+  border-color: #4a90e2;
+}
+
+.dark-mode .btn-outline-dark {
+  border-color: #f1f1f1;
+  color: #f1f1f1;
+}
+
+.dark-mode .btn-outline-dark:hover {
+  background-color: #f1f1f1;
+  color: #1e1e2f;
+}
