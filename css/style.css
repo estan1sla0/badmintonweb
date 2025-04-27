@@ -108,3 +108,17 @@ input, select, textarea {
   background-color: #f1f1f1;
   color: #1e1e2f;
 }
+
+/* 🎯 Mejoras para campos dentro del formulario modo oscuro */
+.dark-mode input,
+.dark-mode select,
+.dark-mode textarea {
+  background-color: #3a3a4e;
+  color: #f1f1f1;
+  border: 1px solid #555;
+}
+
+.dark-mode input::placeholder,
+.dark-mode textarea::placeholder {
+  color: #bbb;
+}
