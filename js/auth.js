@@ -22,11 +22,13 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       const email = document.getElementById('registerUser').value;
       const password = document.getElementById('registerPass').value;
-      const rol = document.getElementById('registerRol').value;
 
       try {
         const cred = await auth.createUserWithEmailAndPassword(email, password);
-        await db.collection('usuarios').doc(cred.user.uid).set({ rol });
+
+        // Guarda el rol por defecto como "usuario"
+        await db.collection('usuarios').doc(cred.user.uid).set({ rol: 'usuario' });
+
         Swal.fire('Registrado', 'Usuario creado correctamente', 'success').then(() => {
           window.location.href = 'index.html';
         });
