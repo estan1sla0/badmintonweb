@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
         modalidad: form.modalidad.value,
         carga: form.carga.value,
         descripcion: form.descripcion.value,
-        id: nuevoDoc.id // 🔥 Guardamos el ID en el documento para usarlo después
+        id: nuevoDoc.id
       };
 
       try {
@@ -50,10 +50,10 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("filtroCategoria").addEventListener("change", filtrar);
     document.getElementById("filtroModalidad").addEventListener("change", filtrar);
     document.getElementById("filtroTrabajo").addEventListener("change", filtrar);
+    document.getElementById("filtroCarga")?.addEventListener("change", filtrar); // solo si existe
 
     document.getElementById("exportBtn").addEventListener("click", exportarExcel);
 
-    // 🔥 Modo Oscuro: aplicarlo si estaba guardado
     const modoGuardado = localStorage.getItem("modo");
     if (modoGuardado === "oscuro") {
       document.body.classList.add("dark-mode");
@@ -61,13 +61,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // 🔥 Botón de Modo Oscuro
   document.getElementById("darkModeBtn").addEventListener("click", () => {
     document.body.classList.toggle("dark-mode");
-
     const modoActual = document.body.classList.contains("dark-mode") ? "oscuro" : "claro";
     localStorage.setItem("modo", modoActual);
-
     actualizarIcono();
   });
 });
@@ -113,12 +110,14 @@ function filtrar() {
   const categoria = document.getElementById("filtroCategoria").value;
   const modalidad = document.getElementById("filtroModalidad").value;
   const trabajo = document.getElementById("filtroTrabajo").value;
+  const carga = document.getElementById("filtroCarga")?.value || "";
 
   const filtrados = entrenamientos.filter(entrenamiento => {
     return (
       (categoria === "" || entrenamiento.categoria === categoria) &&
       (modalidad === "" || entrenamiento.modalidad === modalidad) &&
-      (trabajo === "" || entrenamiento.tipoTrabajo === trabajo)
+      (trabajo === "" || entrenamiento.tipoTrabajo === trabajo) &&
+      (carga === "" || entrenamiento.carga === carga)
     );
   });
 
@@ -140,11 +139,10 @@ function exportarExcel() {
   XLSX.writeFile(workbook, "entrenamientos.xlsx");
 }
 
-// 🔥 Función auxiliar para cambiar icono del botón Modo Oscuro
 function actualizarIcono() {
   const boton = document.getElementById("darkModeBtn");
   if (!boton) return;
-  
+
   if (document.body.classList.contains("dark-mode")) {
     boton.textContent = "☀️";
     boton.classList.remove("btn-outline-dark");
@@ -156,7 +154,6 @@ function actualizarIcono() {
   }
 }
 
-// 🔥 Función para editar descripción
 async function editarDescripcion(id) {
   const docRef = db.collection("entrenamientos").doc(id);
   const docSnap = await docRef.get();
@@ -184,7 +181,6 @@ async function editarDescripcion(id) {
   }
 }
 
-// 🔥 Función para eliminar entrenamiento
 async function eliminarEntrenamiento(id) {
   const confirmacion = await Swal.fire({
     title: '¿Eliminar entrenamiento?',
