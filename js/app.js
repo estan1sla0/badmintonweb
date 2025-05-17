@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("filtroCategoria").addEventListener("change", filtrar);
     document.getElementById("filtroModalidad").addEventListener("change", filtrar);
     document.getElementById("filtroTrabajo").addEventListener("change", filtrar);
-    document.getElementById("filtroCarga")?.addEventListener("change", filtrar); // solo si existe
+    document.getElementById("filtroCarga")?.addEventListener("change", filtrar);
 
     document.getElementById("exportBtn").addEventListener("click", exportarExcel);
 
@@ -87,7 +87,17 @@ function mostrarEntrenamientos(datos) {
   const tabla = document.getElementById("tablaEntrenamientos");
   tabla.innerHTML = "";
 
+  const uidActual = firebase.auth().currentUser.uid;
+  const rolActual = document.getElementById("userRol").innerText;
+
   datos.forEach(data => {
+    const puedeEditar = rolActual === "entrenador" || data.uid === uidActual;
+
+    const acciones = puedeEditar
+      ? `<button class="btn btn-sm btn-warning me-1" onclick="editarDescripcion('${data.id}')">Editar</button>
+         <button class="btn btn-sm btn-danger" onclick="eliminarEntrenamiento('${data.id}')">Eliminar</button>`
+      : `<span class="text-muted">Sin permiso</span>`;
+
     const fila = `
       <tr>
         <td>${data.fecha}</td>
@@ -96,10 +106,7 @@ function mostrarEntrenamientos(datos) {
         <td>${data.modalidad}</td>
         <td>${data.carga}</td>
         <td class="descripcion">${data.descripcion}</td>
-        <td>
-          <button class="btn btn-sm btn-warning me-1" onclick="editarDescripcion('${data.id}')">Editar</button>
-          <button class="btn btn-sm btn-danger" onclick="eliminarEntrenamiento('${data.id}')">Eliminar</button>
-        </td>
+        <td>${acciones}</td>
       </tr>
     `;
     tabla.innerHTML += fila;
