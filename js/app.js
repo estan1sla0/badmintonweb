@@ -32,6 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
         modalidad: form.modalidad.value,
         carga: form.carga.value,
         descripcion: form.descripcion.value,
+        nota: "", // nota opcional
         id: nuevoDoc.id
       };
 
@@ -75,7 +76,7 @@ async function cargarEntrenamientos(rol, uid) {
 
   snapshot.forEach(doc => {
     const data = doc.data();
-    if (rol === "entrenador" || data.uid === uid) {
+    if (data.uid === uid) {
       entrenamientos.push({ ...data, id: doc.id });
     }
   });
@@ -88,14 +89,15 @@ function mostrarEntrenamientos(datos) {
   tabla.innerHTML = "";
 
   const uidActual = firebase.auth().currentUser.uid;
-  const rolActual = document.getElementById("userRol").innerText;
 
   datos.forEach(data => {
-    const puedeEditar = rolActual === "entrenador" || data.uid === uidActual;
+    const puedeEditar = data.uid === uidActual;
 
     const acciones = puedeEditar
-      ? `<button class="btn btn-sm btn-warning me-1" onclick="editarDescripcion('${data.id}')">Editar</button>
-         <button class="btn btn-sm btn-danger" onclick="eliminarEntrenamiento('${data.id}')">Eliminar</button>`
+      ? `
+        <button class="btn btn-sm btn-warning me-1" onclick="editarDescripcion('${data.id}')">Editar</button>
+        <button class="btn btn-sm btn-danger me-1" onclick="eliminarEntrenamiento('${data.id}')">Eliminar</button>
+        <button class="btn btn-sm btn-info" onclick="editarNota('${data.id}')">📝 Nota</button>`
       : `<span class="text-muted">Sin permiso</span>`;
 
     const fila = `
@@ -138,7 +140,8 @@ function exportarExcel() {
     Trabajo: ent.tipoTrabajo,
     Modalidad: ent.modalidad,
     Carga: ent.carga,
-    Descripción: ent.descripcion
+    Descripción: ent.descripcion,
+    Nota: ent.nota || ""
   })));
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, "Entrenamientos");
@@ -183,8 +186,34 @@ async function editarDescripcion(id) {
 
   if (nuevaDescripcion) {
     await docRef.update({ descripcion: nuevaDescripcion });
-    await cargarEntrenamientos(document.getElementById("userRol").innerText, firebase.auth().currentUser.uid);
+    await cargarEntrenamientos("usuario", firebase.auth().currentUser.uid);
     Swal.fire('Actualizado', 'La descripción fue actualizada correctamente.', 'success');
+  }
+}
+
+async function editarNota(id) {
+  const docRef = db.collection("entrenamientos").doc(id);
+  const docSnap = await docRef.get();
+
+  const notaActual = docSnap.data().nota || "";
+
+  const { value: nuevaNota } = await Swal.fire({
+    title: 'Editar Nota',
+    input: 'textarea',
+    inputLabel: 'Nota privada sobre el entrenamiento',
+    inputValue: notaActual,
+    showCancelButton: true,
+    confirmButtonText: 'Guardar',
+    cancelButtonText: 'Cancelar',
+    inputAttributes: {
+      maxlength: 500,
+      'aria-label': 'Nota privada'
+    }
+  });
+
+  if (nuevaNota !== undefined) {
+    await docRef.update({ nota: nuevaNota });
+    Swal.fire('Guardado', 'La nota fue actualizada correctamente.', 'success');
   }
 }
 
@@ -202,7 +231,7 @@ async function eliminarEntrenamiento(id) {
 
   if (confirmacion.isConfirmed) {
     await db.collection("entrenamientos").doc(id).delete();
-    await cargarEntrenamientos(document.getElementById("userRol").innerText, firebase.auth().currentUser.uid);
+    await cargarEntrenamientos("usuario", firebase.auth().currentUser.uid);
     Swal.fire('Eliminado', 'El entrenamiento fue eliminado.', 'success');
   }
 }
