@@ -77,6 +77,7 @@ async function cargarEntrenamientos(uid) {
 
   entrenamientos = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
   mostrarEntrenamientos(entrenamientos);
+  mostrarEstadisticas(entrenamientos); // ✅ NUEVO
 }
 
 function getCargaColorClass(carga) {
@@ -125,6 +126,42 @@ function mostrarEntrenamientos(datos) {
   });
 }
 
+function mostrarEstadisticas(data) {
+  const resumen = {
+    Categoría: {},
+    Trabajo: {},
+    Modalidad: {},
+    Carga: {}
+  };
+
+  data.forEach(ent => {
+    resumen.Categoría[ent.categoria] = (resumen.Categoría[ent.categoria] || 0) + 1;
+    resumen.Trabajo[ent.tipoTrabajo] = (resumen.Trabajo[ent.tipoTrabajo] || 0) + 1;
+    resumen.Modalidad[ent.modalidad] = (resumen.Modalidad[ent.modalidad] || 0) + 1;
+    resumen.Carga[ent.carga] = (resumen.Carga[ent.carga] || 0) + 1;
+  });
+
+  const contenedor = document.getElementById("estadisticasResumen");
+  contenedor.innerHTML = "";
+
+  Object.entries(resumen).forEach(([titulo, valores]) => {
+    Object.entries(valores).forEach(([clave, cantidad]) => {
+      const card = `
+        <div class="col-md-3">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+              <h6 class="text-muted">${titulo}</h6>
+              <h5 class="fw-bold mb-1">${clave}</h5>
+              <span class="badge bg-primary rounded-pill fs-6">${cantidad}</span>
+            </div>
+          </div>
+        </div>
+      `;
+      contenedor.innerHTML += card;
+    });
+  });
+}
+
 function filtrar() {
   const categoria = document.getElementById("filtroCategoria").value;
   const modalidad = document.getElementById("filtroModalidad").value;
@@ -141,6 +178,7 @@ function filtrar() {
   });
 
   mostrarEntrenamientos(filtrados);
+  mostrarEstadisticas(filtrados); // ✅ actualiza también las estadísticas filtradas
 }
 
 function exportarExcel() {
@@ -176,7 +214,6 @@ function actualizarIcono() {
 async function editarDescripcion(id) {
   const docRef = db.collection("entrenamientos").doc(id);
   const docSnap = await docRef.get();
-
   const descripcionActual = docSnap.data().descripcion;
 
   const { value: nuevaDescripcion } = await Swal.fire({
@@ -202,7 +239,6 @@ async function editarDescripcion(id) {
 async function editarNota(id) {
   const docRef = db.collection("entrenamientos").doc(id);
   const docSnap = await docRef.get();
-
   const notaActual = docSnap.data().nota || "";
 
   const { value: nuevaNota } = await Swal.fire({
