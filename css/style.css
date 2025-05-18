@@ -45,10 +45,16 @@ textarea.form-control {
   word-break: break-word;
 }
 
-.descripcion {
-  max-width: 250px;
+.descripcion,
+.nota {
+  max-width: 300px;
   white-space: pre-wrap;
   word-break: break-word;
+  padding: 10px;
+  text-align: left;
+  vertical-align: top;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .btn {
@@ -188,6 +194,7 @@ td {
   background-color: #0069d9;
   border-color: #0062cc;
 }
+
 * {
   font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
 }
