@@ -98,14 +98,16 @@ function mostrarEntrenamientos(datos) {
 
   datos.forEach(data => {
     const puedeEditar = data.uid === uidActual;
+    const cargaClass = getCargaColorClass(data.carga || "");
+
     const acciones = puedeEditar
       ? `
-        <button class="btn btn-sm btn-warning me-1" onclick="editarDescripcion('${data.id}')">Editar</button>
-        <button class="btn btn-sm btn-danger me-1" onclick="eliminarEntrenamiento('${data.id}')">Eliminar</button>
-        <button class="btn btn-sm btn-info" onclick="editarNota('${data.id}')">📝 Nota</button>`
+        <div class="d-flex justify-content-center gap-2">
+          <i class="bi bi-pencil text-warning" role="button" title="Editar descripción" onclick="editarDescripcion('${data.id}')"></i>
+          <i class="bi bi-trash text-danger" role="button" title="Eliminar entrenamiento" onclick="eliminarEntrenamiento('${data.id}')"></i>
+          <i class="bi bi-chat-left-text text-primary" role="button" title="Editar nota" onclick="editarNota('${data.id}')"></i>
+        </div>`
       : `<span class="text-muted">Sin permiso</span>`;
-
-    const cargaClass = getCargaColorClass(data.carga || "");
 
     const fila = `
       <tr>
