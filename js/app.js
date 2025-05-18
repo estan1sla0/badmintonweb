@@ -104,6 +104,7 @@ function mostrarEntrenamientos(datos) {
         <td>${data.modalidad}</td>
         <td>${data.carga}</td>
         <td class="descripcion">${data.descripcion}</td>
+        <td class="nota">${data.nota || ""}</td>
         <td>${acciones}</td>
       </tr>
     `;
