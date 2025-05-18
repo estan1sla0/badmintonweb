@@ -32,21 +32,21 @@ document.addEventListener("DOMContentLoaded", () => {
         modalidad: form.modalidad.value,
         carga: form.carga.value,
         descripcion: form.descripcion.value,
-        nota: "", // nota opcional
+        nota: "", // campo nuevo
         id: nuevoDoc.id
       };
 
       try {
         await nuevoDoc.set(nuevo);
         form.reset();
-        await cargarEntrenamientos(rol, uid);
+        await cargarEntrenamientos(uid);
       } catch (error) {
         console.error("Error al guardar entrenamiento:", error);
         Swal.fire('Error', error.message, 'error');
       }
     });
 
-    await cargarEntrenamientos(rol, uid);
+    await cargarEntrenamientos(uid);
 
     document.getElementById("filtroCategoria").addEventListener("change", filtrar);
     document.getElementById("filtroModalidad").addEventListener("change", filtrar);
@@ -70,17 +70,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-async function cargarEntrenamientos(rol, uid) {
-  const snapshot = await db.collection("entrenamientos").orderBy("fecha").get();
-  entrenamientos = [];
+async function cargarEntrenamientos(uid) {
+  const snapshot = await db.collection("entrenamientos")
+    .where("uid", "==", uid)
+    .orderBy("fecha")
+    .get();
 
-  snapshot.forEach(doc => {
-    const data = doc.data();
-    if (data.uid === uid) {
-      entrenamientos.push({ ...data, id: doc.id });
-    }
-  });
-
+  entrenamientos = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
   mostrarEntrenamientos(entrenamientos);
 }
 
@@ -186,7 +182,7 @@ async function editarDescripcion(id) {
 
   if (nuevaDescripcion) {
     await docRef.update({ descripcion: nuevaDescripcion });
-    await cargarEntrenamientos("usuario", firebase.auth().currentUser.uid);
+    await cargarEntrenamientos(firebase.auth().currentUser.uid);
     Swal.fire('Actualizado', 'La descripción fue actualizada correctamente.', 'success');
   }
 }
@@ -231,7 +227,7 @@ async function eliminarEntrenamiento(id) {
 
   if (confirmacion.isConfirmed) {
     await db.collection("entrenamientos").doc(id).delete();
-    await cargarEntrenamientos("usuario", firebase.auth().currentUser.uid);
+    await cargarEntrenamientos(firebase.auth().currentUser.uid);
     Swal.fire('Eliminado', 'El entrenamiento fue eliminado.', 'success');
   }
 }
