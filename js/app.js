@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    document.getElementById("limpiarFiltros")?.addEventListener("click", () => {
+    document.getElementById("limpiarFiltrosBtn").addEventListener("click", () => {
       document.getElementById("filtroCategoria").value = "";
       document.getElementById("filtroModalidad").value = "";
       document.getElementById("filtroTrabajo").value = "";
@@ -86,6 +86,7 @@ async function cargarEntrenamientos(uid) {
   entrenamientos = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
   mostrarEntrenamientos(entrenamientos);
   mostrarEstadisticas(entrenamientos);
+  actualizarFiltrosVisuales();
 }
 
 function getCargaColorClass(carga) {
@@ -133,8 +134,7 @@ function mostrarEntrenamientos(datos) {
     tabla.innerHTML += fila;
   });
 
-  // Actualizar contador
-  document.getElementById("contadorEntrenamientos").innerText = `${datos.length} entrenamientos encontrados`;
+  document.getElementById("contadorEntrenamientos")?.innerText = `${datos.length} entrenamiento(s) encontrados`;
 }
 
 function mostrarEstadisticas(data) {
@@ -190,23 +190,30 @@ function filtrar() {
 
   mostrarEntrenamientos(filtrados);
   mostrarEstadisticas(filtrados);
+  actualizarFiltrosVisuales();
+}
 
-  // Filtros activos
+function actualizarFiltrosVisuales() {
+  const categoria = document.getElementById("filtroCategoria").value;
+  const modalidad = document.getElementById("filtroModalidad").value;
+  const trabajo = document.getElementById("filtroTrabajo").value;
+  const carga = document.getElementById("filtroCarga")?.value || "";
+
   const filtros = [];
   if (categoria) filtros.push(`Categoría: ${categoria}`);
   if (modalidad) filtros.push(`Modalidad: ${modalidad}`);
   if (trabajo) filtros.push(`Trabajo: ${trabajo}`);
   if (carga) filtros.push(`Carga: ${carga}`);
 
-  const contenedorFiltros = document.getElementById("filtrosActivosContainer");
   const badgeContainer = document.getElementById("filtrosActivos");
+  const contenedor = document.getElementById("filtrosActivosContainer");
 
   if (filtros.length > 0) {
     badgeContainer.innerHTML = filtros.map(f => `<span class="badge bg-info text-dark me-1">${f}</span>`).join(" ");
-    contenedorFiltros.style.display = "block";
+    contenedor.style.display = "block";
   } else {
     badgeContainer.innerHTML = "";
-    contenedorFiltros.style.display = "none";
+    contenedor.style.display = "none";
   }
 }
 
@@ -253,9 +260,7 @@ async function editarDescripcion(id) {
     showCancelButton: true,
     confirmButtonText: 'Guardar',
     cancelButtonText: 'Cancelar',
-    inputAttributes: {
-      maxlength: 500
-    }
+    inputAttributes: { maxlength: 500 }
   });
 
   if (nuevaDescripcion !== undefined) {
@@ -278,9 +283,7 @@ async function editarNota(id) {
     showCancelButton: true,
     confirmButtonText: 'Guardar',
     cancelButtonText: 'Cancelar',
-    inputAttributes: {
-      maxlength: 500
-    }
+    inputAttributes: { maxlength: 500 }
   });
 
   if (nuevaNota !== undefined) {
