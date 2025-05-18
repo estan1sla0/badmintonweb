@@ -209,33 +209,43 @@ td {
 
 /* 🌈 Colores según Carga (escala de Borg) */
 .carga-baja {
-  background-color: #d4edda;
-  color: #155724;
-  font-weight: bold;
+  background-color: #d4edda !important;
+  color: #155724 !important;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-weight: 600;
 }
 
 .carga-media-baja {
-  background-color: #fff3cd;
-  color: #856404;
-  font-weight: bold;
+  background-color: #fff3cd !important;
+  color: #856404 !important;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-weight: 600;
 }
 
 .carga-media {
-  background-color: #ffeeba;
-  color: #856404;
-  font-weight: bold;
+  background-color: #ffeeba !important;
+  color: #795548 !important;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-weight: 600;
 }
 
 .carga-media-alta {
-  background-color: #f8d7da;
-  color: #721c24;
-  font-weight: bold;
+  background-color: #f8d7da !important;
+  color: #721c24 !important;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-weight: 600;
 }
 
 .carga-alta {
-  background-color: #f5c6cb;
-  color: #721c24;
-  font-weight: bold;
+  background-color: #f5c6cb !important;
+  color: #721c24 !important;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-weight: 700;
 }
 
 * {
