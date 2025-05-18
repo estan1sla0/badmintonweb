@@ -20,6 +20,14 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
+    document.getElementById("limpiarFiltros")?.addEventListener("click", () => {
+      document.getElementById("filtroCategoria").value = "";
+      document.getElementById("filtroModalidad").value = "";
+      document.getElementById("filtroTrabajo").value = "";
+      document.getElementById("filtroCarga").value = "";
+      filtrar();
+    });
+
     const form = document.getElementById("formEntrenamiento");
     form.addEventListener("submit", async e => {
       e.preventDefault();
@@ -77,7 +85,7 @@ async function cargarEntrenamientos(uid) {
 
   entrenamientos = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
   mostrarEntrenamientos(entrenamientos);
-  mostrarEstadisticas(entrenamientos); // ✅ NUEVO
+  mostrarEstadisticas(entrenamientos);
 }
 
 function getCargaColorClass(carga) {
@@ -124,6 +132,9 @@ function mostrarEntrenamientos(datos) {
     `;
     tabla.innerHTML += fila;
   });
+
+  // Actualizar contador
+  document.getElementById("contadorEntrenamientos").innerText = `${datos.length} entrenamientos encontrados`;
 }
 
 function mostrarEstadisticas(data) {
@@ -178,7 +189,25 @@ function filtrar() {
   });
 
   mostrarEntrenamientos(filtrados);
-  mostrarEstadisticas(filtrados); // ✅ actualiza también las estadísticas filtradas
+  mostrarEstadisticas(filtrados);
+
+  // Filtros activos
+  const filtros = [];
+  if (categoria) filtros.push(`Categoría: ${categoria}`);
+  if (modalidad) filtros.push(`Modalidad: ${modalidad}`);
+  if (trabajo) filtros.push(`Trabajo: ${trabajo}`);
+  if (carga) filtros.push(`Carga: ${carga}`);
+
+  const contenedorFiltros = document.getElementById("filtrosActivosContainer");
+  const badgeContainer = document.getElementById("filtrosActivos");
+
+  if (filtros.length > 0) {
+    badgeContainer.innerHTML = filtros.map(f => `<span class="badge bg-info text-dark me-1">${f}</span>`).join(" ");
+    contenedorFiltros.style.display = "block";
+  } else {
+    badgeContainer.innerHTML = "";
+    contenedorFiltros.style.display = "none";
+  }
 }
 
 function exportarExcel() {
