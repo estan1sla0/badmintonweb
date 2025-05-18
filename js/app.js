@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
         modalidad: form.modalidad.value,
         carga: form.carga.value,
         descripcion: form.descripcion.value,
-        nota: "", // campo nuevo
+        nota: "",
         id: nuevoDoc.id
       };
 
@@ -52,7 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("filtroModalidad").addEventListener("change", filtrar);
     document.getElementById("filtroTrabajo").addEventListener("change", filtrar);
     document.getElementById("filtroCarga")?.addEventListener("change", filtrar);
-
     document.getElementById("exportBtn").addEventListener("click", exportarExcel);
 
     const modoGuardado = localStorage.getItem("modo");
@@ -80,6 +79,17 @@ async function cargarEntrenamientos(uid) {
   mostrarEntrenamientos(entrenamientos);
 }
 
+function getCargaColorClass(carga) {
+  switch (carga.trim().charAt(0)) {
+    case "1": return "carga-baja";
+    case "2": return "carga-media-baja";
+    case "3": return "carga-media";
+    case "4": return "carga-media-alta";
+    case "5": return "carga-alta";
+    default: return "";
+  }
+}
+
 function mostrarEntrenamientos(datos) {
   const tabla = document.getElementById("tablaEntrenamientos");
   tabla.innerHTML = "";
@@ -88,7 +98,6 @@ function mostrarEntrenamientos(datos) {
 
   datos.forEach(data => {
     const puedeEditar = data.uid === uidActual;
-
     const acciones = puedeEditar
       ? `
         <button class="btn btn-sm btn-warning me-1" onclick="editarDescripcion('${data.id}')">Editar</button>
@@ -96,13 +105,15 @@ function mostrarEntrenamientos(datos) {
         <button class="btn btn-sm btn-info" onclick="editarNota('${data.id}')">📝 Nota</button>`
       : `<span class="text-muted">Sin permiso</span>`;
 
+    const cargaClass = getCargaColorClass(data.carga || "");
+
     const fila = `
       <tr>
         <td>${data.fecha}</td>
         <td>${data.categoria}</td>
         <td>${data.tipoTrabajo}</td>
         <td>${data.modalidad}</td>
-        <td>${data.carga}</td>
+        <td class="${cargaClass}">${data.carga}</td>
         <td class="descripcion">${data.descripcion}</td>
         <td class="nota">${data.nota || ""}</td>
         <td>${acciones}</td>
@@ -118,12 +129,12 @@ function filtrar() {
   const trabajo = document.getElementById("filtroTrabajo").value;
   const carga = document.getElementById("filtroCarga")?.value || "";
 
-  const filtrados = entrenamientos.filter(entrenamiento => {
+  const filtrados = entrenamientos.filter(ent => {
     return (
-      (categoria === "" || entrenamiento.categoria === categoria) &&
-      (modalidad === "" || entrenamiento.modalidad === modalidad) &&
-      (trabajo === "" || entrenamiento.tipoTrabajo === trabajo) &&
-      (carga === "" || entrenamiento.carga === carga)
+      (categoria === "" || ent.categoria === categoria) &&
+      (modalidad === "" || ent.modalidad === modalidad) &&
+      (trabajo === "" || ent.tipoTrabajo === trabajo) &&
+      (carga === "" || ent.carga === carga)
     );
   });
 
@@ -142,7 +153,6 @@ function exportarExcel() {
   })));
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, "Entrenamientos");
-
   XLSX.writeFile(workbook, "entrenamientos.xlsx");
 }
 
@@ -176,12 +186,11 @@ async function editarDescripcion(id) {
     confirmButtonText: 'Guardar',
     cancelButtonText: 'Cancelar',
     inputAttributes: {
-      maxlength: 500,
-      'aria-label': 'Editar descripción'
+      maxlength: 500
     }
   });
 
-  if (nuevaDescripcion) {
+  if (nuevaDescripcion !== undefined) {
     await docRef.update({ descripcion: nuevaDescripcion });
     await cargarEntrenamientos(firebase.auth().currentUser.uid);
     Swal.fire('Actualizado', 'La descripción fue actualizada correctamente.', 'success');
@@ -203,8 +212,7 @@ async function editarNota(id) {
     confirmButtonText: 'Guardar',
     cancelButtonText: 'Cancelar',
     inputAttributes: {
-      maxlength: 500,
-      'aria-label': 'Nota privada'
+      maxlength: 500
     }
   });
 
