@@ -207,6 +207,37 @@ td {
   border-color: #0062cc;
 }
 
+/* 🌈 Colores según Carga (escala de Borg) */
+.carga-baja {
+  background-color: #d4edda;
+  color: #155724;
+  font-weight: bold;
+}
+
+.carga-media-baja {
+  background-color: #fff3cd;
+  color: #856404;
+  font-weight: bold;
+}
+
+.carga-media {
+  background-color: #ffeeba;
+  color: #856404;
+  font-weight: bold;
+}
+
+.carga-media-alta {
+  background-color: #f8d7da;
+  color: #721c24;
+  font-weight: bold;
+}
+
+.carga-alta {
+  background-color: #f5c6cb;
+  color: #721c24;
+  font-weight: bold;
+}
+
 * {
   font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
 }
