@@ -20,7 +20,8 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    document.getElementById("limpiarFiltrosBtn").addEventListener("click", () => {
+    // ✅ Listener para limpiar filtros (ID corregido)
+    document.getElementById("limpiarFiltros").addEventListener("click", () => {
       document.getElementById("filtroCategoria").value = "";
       document.getElementById("filtroModalidad").value = "";
       document.getElementById("filtroTrabajo").value = "";
